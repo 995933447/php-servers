@@ -64,7 +64,7 @@ class TcpServer extends ServerContract
 
     public function pause()
     {
-        $this->eventLoop->removeLoopStream(LoopContract::WRITE_EVENT, $this->server);
+        $this->eventLoop->removeLoopStream(LoopContract::READ_EVENT, $this->server);
         $this->isPaused = true;
     }
 
@@ -104,6 +104,7 @@ class TcpServer extends ServerContract
         if (!$this->serveSocket->isOpenedSsl() || $connection->isOpenedSsl()) {
             $this->writeTo($stream);
         }
+
         return true;
     }
 
@@ -196,15 +197,22 @@ class TcpServer extends ServerContract
     protected function receive(ConnectionContract $connection)
     {
         if (!$this->isPaused) {
-            if (!is_null($exception = $connection->receiveBuffer())) {
-                $this->emitOnError($connection, $exception);
+            try {
+                $connection->receiveBuffer();
+            } catch (\Exception $e) {
+                $this->emitOnError($connection, $e);
                 return;
             }
 
-            if (!empty($messages = $connection->decodeReceivedBuffer())) {
-                foreach ($messages as $message) {
-                    $this->emitOnReceive($connection, $message);
-                }
+            try {
+                $messages = $connection->decodeReceivedBuffer();
+            } catch (\Exception $e) {
+                $this->emitOnError($connection, $e);
+                $messages = [];
+            }
+
+            foreach ($messages as $message) {
+                $this->emitOnReceive($connection, $message);
             }
 
             if (isset($this->config->serveOptions['receive_buffer_size']) && $this->config->serveOptions['receive_buffer_size'] > $connection->getReceivedBufferLength()) {

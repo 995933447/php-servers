@@ -15,9 +15,9 @@ interface ConnectionContract
 
     public function resume();
 
-    public function receiveBuffer(): ?\ErrorException;
+    public function receiveBuffer(): int;
 
-    public function decodeReceivedBuffer(): ?array;
+    public function decodeReceivedBuffer(): array;
 
     public function getReceivedBuffer(): string;
 

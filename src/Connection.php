@@ -71,15 +71,15 @@ class Connection implements ConnectionContract
         $this->isPaused = false;
     }
 
-    public function receiveBuffer(): ?\ErrorException
+    public function receiveBuffer(): int
     {
-        $readException = null;
         if ($this->isPaused) {
-            return $readException;
+            return 0;
         }
 
+        $readException = null;
         set_error_handler(function ($errno, $error, $file, $line) use ($readException) {
-            $readException = new ReceiveBufferFullException($error, $errno, $file, $line);
+            $readException = new SocketReadFailedException($error, $errno, $file, $line);
         });
 
         $data = stream_get_contents($this->stream);
@@ -88,12 +88,13 @@ class Connection implements ConnectionContract
 
         if ($data !== false) {
             $this->protocolParser->input($data);
+            return strlen($data);
+        } else {
+            throw $readException;
         }
-
-        return $readException;
     }
 
-    public function decodeReceivedBuffer(): ?array
+    public function decodeReceivedBuffer(): array
     {
         return $this->protocolParser->decode();
     }
