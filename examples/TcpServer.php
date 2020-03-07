@@ -21,7 +21,7 @@ $tcp->on(\Bobby\Network\Servers\TcpServer::CLOSE_EVENT, function (\Bobby\Network
     echo 'Socket ' . (int)$connection->exportStream() . ' is closed.', PHP_EOL;
 });
 
-$tcp->on(\Bobby\Network\Servers\TcpServer::ERROR_EVENT, function (\Bobby\Network\Servers\TcpServer $server, \Bobby\Network\Connection $connection, Exception $exception) {
+$tcp->on(\Bobby\Network\Servers\TcpServer::ERROR_EVENT, function (\Bobby\Network\Servers\TcpServer $server, \Bobby\Network\Connection $connection, Throwable $exception) {
         var_dump($exception);
 });
 

@@ -102,12 +102,12 @@ class TcpServer extends ServerContract
         $this->sendingBuffers->add($stream, $message);
 
         if (!$this->serveSocket->isOpenedSsl() || $connection->isOpenedSsl()) {
-            $this->toWrite($stream);
+            $this->writeTo($stream);
         }
         return true;
     }
 
-    public function toWrite($stream)
+    public function writeTo($stream)
     {
         if (!$this->sendingBuffers->exist($stream)) {
             return;
@@ -133,7 +133,7 @@ class TcpServer extends ServerContract
         } else if ($written < strlen($message)) {
             $this->sendingBuffers->set($stream, substr($message, $written));
             $this->eventLoop->addLoopStream(LoopContract::WRITE_EVENT, $stream, function ($stream) {
-                $this->toWrite($stream);
+                $this->writeTo($stream);
             });
         } else {
             $this->eventLoop->removeLoopStream(LoopContract::WRITE_EVENT, $stream);
@@ -253,8 +253,8 @@ class TcpServer extends ServerContract
         $this->eventHandler->trigger(static::CLOSE_EVENT, $this, $connection);
     }
 
-    protected function emitOnError(ConnectionContract $connection, \Exception $exception)
+    protected function emitOnError(ConnectionContract $connection, \Throwable $exception)
     {
-        $this->eventHandler->trigger(static::ERROR_EVENT, $this, $connectiom, $exception);
+        $this->eventHandler->trigger(static::ERROR_EVENT, $this, $connection, $exception);
     }
 }
