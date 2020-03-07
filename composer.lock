@@ -1,0 +1,141 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "60408bd44ee4113a501be1ee09b40a6b",
+    "packages": [
+        {
+            "name": "bobby/multi-processes",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/995933447/php-multi-processes-component.git",
+                "reference": "3b83f961ea57d5e2adafdf5bf97454a5a2011991"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/995933447/php-multi-processes-component/zipball/3b83f961ea57d5e2adafdf5bf97454a5a2011991",
+                "reference": "3b83f961ea57d5e2adafdf5bf97454a5a2011991",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-pcntl": "*",
+                "ext-posix": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bobby\\MultiProcesses\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "bobby",
+                    "email": "995933447@qq.com"
+                }
+            ],
+            "description": "php原生pcntl实现的简易多进程和进程池组件,支持父子进程双向通信传输数据.包含进程池按需动态fork进程功能.",
+            "time": "2020-02-22T03:47:50+00:00"
+        },
+        {
+            "name": "bobby/server-network-protocol",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/995933447/php-server-network-protocol.git",
+                "reference": "0fdb7c8b3302a0e76ecee3b42c429a87b88e62bb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/0fdb7c8b3302a0e76ecee3b42c429a87b88e62bb",
+                "reference": "0fdb7c8b3302a0e76ecee3b42c429a87b88e62bb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*"
+            },
+            "require-dev": {
+                "phpunit/php-invoker": "^2.0",
+                "phpunit/phpunit": "^8.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bobby\\ServerNetworkProtocol\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "bobby",
+                    "email": "995933447@qq.com"
+                }
+            ],
+            "description": "Server network protocol parsers",
+            "time": "2020-03-04T10:31:28+00:00"
+        },
+        {
+            "name": "bobby/stream-event-loop",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/995933447/php-stream-event-loop.git",
+                "reference": "7787f2137e1aac726ad1fc6089fce144f6592d65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/995933447/php-stream-event-loop/zipball/7787f2137e1aac726ad1fc6089fce144f6592d65",
+                "reference": "7787f2137e1aac726ad1fc6089fce144f6592d65",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcntl": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bobby\\StreamEventLoop\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "bobby",
+                    "email": "995933447@qq.com"
+                }
+            ],
+            "description": "stream函数开发的异步非阻塞IO事件循环组件",
+            "time": "2020-02-20T01:20:17+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "bobby/multi-processes": 20,
+        "bobby/stream-event-loop": 20,
+        "bobby/server-network-protocol": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "ext-sockets": "*",
+        "ext-pcntl": "*",
+        "ext-posix": "*",
+        "ext-openssl": "*"
+    },
+    "platform-dev": []
+}
