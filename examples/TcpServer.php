@@ -12,7 +12,7 @@ $tcp->on(\Bobby\Network\Servers\TcpServer::CONNECT_EVENT, function (\Bobby\Netwo
 });
 
 $tcp->on(\Bobby\Network\Servers\TcpServer::RECEIVE_EVENT, function (\Bobby\Network\Servers\TcpServer $server, \Bobby\Network\Connection $connection, $data) {
-    echo "Receive message:$data";
+    echo "Receive message:$data", PHP_EOL;
     $server->send($connection->exportStream(), "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nHi");
     $server->close($connection);
 });
