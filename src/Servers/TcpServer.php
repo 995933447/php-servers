@@ -169,7 +169,7 @@ class TcpServer extends ServerContract
 
         $connection->openedSsl();
         if ($this->sendingBuffers->exist($stream = $connection->exportStream())) {
-           $this->toWrite($stream);
+           $this->writeTo($stream);
         }
 
         return true;
