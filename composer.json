@@ -17,7 +17,7 @@
         "ext-sockets": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
     },
     "autoload": {
         "psr-4": {

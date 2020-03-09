@@ -2,36 +2,19 @@
 namespace Bobby\Network;
 
 use Bobby\Network\Contracts\SocketContract;
-use Bobby\Network\Utils\InvalidArgumentException;
 
 class Socket implements SocketContract
 {
     protected $address;
 
-    protected $transport;
-
     protected $context;
 
     protected $isOpenedSsl = false;
 
-    final public function __construct(string $listen, array $context = [])
+    final public function __construct(string $address, array $context = [])
     {
-        $this->parseListen($listen);
+        $this->address = $address;
         $this->createContext($context);
-    }
-
-    protected function parseListen(string $listen)
-    {
-        if (($transportPosition = strpos($listen, '://')) === false) {
-            throw InvalidArgumentException::defaultThrow();
-        }
-
-        if (strlen($listen) <= $transportPosition + 3) {
-            throw InvalidArgumentException::defaultThrow();
-        }
-
-        $this->transport = substr($listen, 0, $transportPosition);
-        $this->address = substr($listen, $transportPosition + 3);
     }
 
     protected function createContext($context)
@@ -50,11 +33,6 @@ class Socket implements SocketContract
     public function getAddress(): string
     {
         return $this->address;
-    }
-
-    public function getTransport(): string
-    {
-        return $this->transport;
     }
 
     public function getContext()

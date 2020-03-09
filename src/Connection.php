@@ -1,10 +1,8 @@
 <?php
 namespace Bobby\Network;
 
-use Bobby\Network\Exceptions\ReceiveBufferFullException;
-use Bobby\Network\Exceptions\SocketEofException;
 use Bobby\Network\Exceptions\SocketReadFailedException;
-use Bobby\Network\Utils\InvalidArgumentException;
+use Bobby\Network\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\ParserContract;
 use Bobby\Network\Contracts\ConnectionContract;
 use Bobby\ServerNetworkProtocol\Tcp\Parser;
@@ -32,6 +30,11 @@ class Connection implements ConnectionContract
         $this->protocolParser = $protocolParser?: new Parser();
         $this->stream = $stream;
         $this->remoteAddress = $remoteAddress;
+    }
+
+    public function getProtocolParser(): ParserContract
+    {
+        return $this->protocolParser;
     }
 
     public function openedSsl()
@@ -65,10 +68,9 @@ class Connection implements ConnectionContract
 
     public function resume()
     {
-        if (!$this->isClosed) {
-            $this->isClosed = true;
+        if ($this->isPaused) {
+            $this->isPaused = false;
         }
-        $this->isPaused = false;
     }
 
     public function receiveBuffer(): int
@@ -89,7 +91,7 @@ class Connection implements ConnectionContract
         if ($data !== false) {
             $this->protocolParser->input($data);
             return strlen($data);
-        } else {
+        } else if ($readException instanceof \Throwable) {
             throw $readException;
         }
     }

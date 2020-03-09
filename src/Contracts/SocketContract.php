@@ -7,7 +7,5 @@ interface SocketContract
 
     public function getAddress(): string;
 
-    public function getTransport(): string;
-
     public function getContext();
 }

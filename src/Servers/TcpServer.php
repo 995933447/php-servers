@@ -36,7 +36,7 @@ class TcpServer extends ServerContract
 
     protected $isPaused = false;
 
-    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT];
+    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT];
 
     protected $sendingBuffers;
 
@@ -57,8 +57,9 @@ class TcpServer extends ServerContract
     public function on(string $event, callable $listener)
     {
         if (!in_array($event, $this->allowEvents)) {
-            InvalidArgumentException::defaultThrow("First event can not allow set.");
+            throw InvalidArgumentException::defaultThrow("First event can not allow set.");
         }
+
         $this->eventHandler->register($event, $listener);
     }
 
@@ -179,6 +180,12 @@ class TcpServer extends ServerContract
     protected function accept()
     {
         $connectSocketStream = stream_socket_accept($this->server, 0, $remoteAddress);
+
+        if (isset($this->config->serveOptions['max_connection']) && $this->config->serveOptions['max_connection'] <= $this->connections->count()) {
+            flose($connectSocketStream);
+            return;
+        }
+
         stream_set_blocking($connectSocketStream, false);
 
         $connection = new Connection($connectSocketStream, $remoteAddress, new Parser($this->config->protocolOptions));
@@ -246,9 +253,9 @@ class TcpServer extends ServerContract
         });
     }
 
-    protected function emitOnReceive(ConnectionContract $conenction, string $message)
+    protected function emitOnReceive(ConnectionContract $connection, $message)
     {
-        $this->eventHandler->trigger(static::RECEIVE_EVENT, $this, $conenction, $message);
+        $this->eventHandler->trigger(static::RECEIVE_EVENT, $this, $connection, $message);
     }
 
     protected function emitOnConnect(ConnectionContract $connection)
