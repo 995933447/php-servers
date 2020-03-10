@@ -1,7 +1,7 @@
 <?php
-namespace Bobby\Network;
+namespace Bobby\Servers;
 
-use Bobby\Network\Contracts\SendingBufferPoolContract;
+use Bobby\Servers\Contracts\SendingBufferPoolContract;
 
 class SendingBufferPool implements SendingBufferPoolContract
 {

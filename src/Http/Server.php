@@ -1,38 +1,45 @@
 <?php
-namespace Bobby\Network;
+namespace Bobby\Servers\Http;
 
-use Bobby\Network\Contracts\ConnectionContract;
-use Bobby\Network\Contracts\SocketContract;
-use Bobby\Network\Servers\TcpServer;
+use Bobby\Servers\Contracts\ConnectionContract;
+use Bobby\Servers\Contracts\SocketContract;
+use Bobby\Servers\Tcp\Server as TcpServer;
 use Bobby\ServerNetworkProtocol\Http\Parser;
 use Bobby\ServerNetworkProtocol\Http\Request;
 use Bobby\StreamEventLoop\LoopContract;
+use Bobby\Servers\ServerConfig;
+use Bobby\Servers\Connection;
 
-class HttpServer extends TcpServer
+class Server extends TcpServer
 {
     const REQUEST_EVENT = 'request';
-
-    protected $allowEvents = [self::REQUEST_EVENT, self::ERROR_EVENT, self::CLOSE_EVENT];
 
     public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
     {
         parent::__construct($serveSocket, $config, $eventLoop);
 
-        $this->on(self::CONNECT_EVENT, function (HttpServer $server, ConnectionContract $connection) {
-            $this->upgradeConnectionProtocol($connection);
+        $this->on(self::CONNECT_EVENT, function (Server $server, ConnectionContract $connection) {
+            $this->upgradeConnectionProtocolToHttp($connection);
         });
 
-        $this->on(self::RECEIVE_EVENT, function (HttpServer $server, Connection $connection, Request $request) {
-            $this->emitOnRequest($request);
+        $this->on(self::RECEIVE_EVENT, function (Server $server, Connection $connection, Request $request) {
+            $this->emitOnRequest($connection, $request);
         });
+
+        $this->resetOnAllowEvents();
     }
 
-    protected function emitOnRequest(Request $request)
+    protected function resetOnAllowEvents()
     {
-        $this->eventHandler->trigger(static::REQUEST_EVENT, $this, $request);
+        $this->allowEvents = [static::REQUEST_EVENT, self::ERROR_EVENT, self::CLOSE_EVENT];
     }
 
-    protected function upgradeConnectionProtocol(ConnectionContract $connection)
+    protected function emitOnRequest(Connection $connection, Request $request)
+    {
+        $this->eventHandler->trigger(static::REQUEST_EVENT, $this, $connection, $request, new Response());
+    }
+
+    protected function upgradeConnectionProtocolToHttp(ConnectionContract $connection)
     {
         if ($connection->isClosed()) {
             $this->close($connection);

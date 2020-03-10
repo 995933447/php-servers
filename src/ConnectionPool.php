@@ -1,8 +1,8 @@
 <?php
-namespace Bobby\Network;
+namespace Bobby\Servers;
 
-use Bobby\Network\Contracts\ConnectionPoolContract;
-use Bobby\Network\Contracts\ConnectionContract;
+use Bobby\Servers\Contracts\ConnectionPoolContract;
+use Bobby\Servers\Contracts\ConnectionContract;
 
 class ConnectionPool implements ConnectionPoolContract
 {

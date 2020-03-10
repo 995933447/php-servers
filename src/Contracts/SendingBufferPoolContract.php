@@ -1,5 +1,5 @@
 <?php
-namespace Bobby\Network\Contracts;
+namespace Bobby\Servers\Contracts;
 
 interface SendingBufferPoolContract
 {

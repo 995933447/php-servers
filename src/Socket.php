@@ -1,7 +1,7 @@
 <?php
-namespace Bobby\Network;
+namespace Bobby\Servers;
 
-use Bobby\Network\Contracts\SocketContract;
+use Bobby\Servers\Contracts\SocketContract;
 
 class Socket implements SocketContract
 {

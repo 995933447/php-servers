@@ -1,5 +1,5 @@
 <?php
-namespace Bobby\Network\Utils;
+namespace Bobby\Servers\Utils;
 
 class EventHandler
 {

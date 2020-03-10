@@ -1,7 +1,7 @@
 <?php
-namespace Bobby\Network\Contracts;
+namespace Bobby\Servers\Contracts;
 
-use Bobby\Network\Utils\MagicGetterTrait;
+use Bobby\Servers\Utils\MagicGetterTrait;
 
 abstract class ServerConfigContract
 {

@@ -1,24 +1,23 @@
 <?php
-namespace Bobby\Network\Servers;
+namespace Bobby\Servers\Tcp;
 
-use Bobby\Network\Connection;
-use Bobby\Network\Contracts\ConnectionContract;
-use Bobby\Network\ConnectionPool;
-use Bobby\Network\Contracts\ConnectionPoolContract;
-use Bobby\Network\Contracts\SocketContract;
-use Bobby\Network\Exceptions\ReceiveBufferFullException;
-use Bobby\Network\Exceptions\SocketWriteFailedException;
-use Bobby\Network\SendingBufferPool;
-use Bobby\Network\ServerConfig;
-use Bobby\Network\Contracts\ServerContract;
-use Bobby\Network\Exceptions\SocketEofException;
-use Bobby\Network\Utils\EventHandler;
-use Bobby\Network\Socket;
-use Bobby\Network\Exceptions\InvalidArgumentException;
+use Bobby\Servers\Connection;
+use Bobby\Servers\Contracts\ConnectionContract;
+use Bobby\Servers\ConnectionPool;
+use Bobby\Servers\Contracts\ConnectionPoolContract;
+use Bobby\Servers\Contracts\SocketContract;
+use Bobby\Servers\Exceptions\ReceiveBufferFullException;
+use Bobby\Servers\Exceptions\SocketWriteFailedException;
+use Bobby\Servers\SendingBufferPool;
+use Bobby\Servers\ServerConfig;
+use Bobby\Servers\Contracts\ServerContract;
+use Bobby\Servers\Exceptions\SocketEofException;
+use Bobby\Servers\Utils\EventHandler;
+use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\Tcp\Parser;
 use Bobby\StreamEventLoop\LoopContract;
 
-class TcpServer extends ServerContract
+class Server extends ServerContract
 {
     const CONNECT_EVENT = 'connect';
 
@@ -182,7 +181,7 @@ class TcpServer extends ServerContract
         $connectSocketStream = stream_socket_accept($this->server, 0, $remoteAddress);
 
         if (isset($this->config->serveOptions['max_connection']) && $this->config->serveOptions['max_connection'] <= $this->connections->count()) {
-            flose($connectSocketStream);
+            fclose($connectSocketStream);
             return;
         }
 
@@ -190,15 +189,15 @@ class TcpServer extends ServerContract
 
         $connection = new Connection($connectSocketStream, $remoteAddress, new Parser($this->config->protocolOptions));
         $this->connections->add($connection);
+        $this->emitOnConnect($connection);
 
-        $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $connectSocketStream, function () use ($connection) {
+        $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $connectSocketStream, function ($connectSocketStream) {
+            $connection = $this->connections->get($connectSocketStream);
             if ($this->serveSocket->isOpenedSsl() && !$connection->isOpenedSsl()) {
                 $this->sslShake($connection);
             }
             $this->receive($connection);
         });
-
-        $this->emitOnConnect($connection);
     }
 
     protected function receive(ConnectionContract $connection)

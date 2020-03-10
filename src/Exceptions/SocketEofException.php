@@ -1,5 +1,5 @@
 <?php
-namespace Bobby\Network\Exceptions;
+namespace Bobby\Servers\Exceptions;
 
 class SocketEofException extends \ErrorException
 {

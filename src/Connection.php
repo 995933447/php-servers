@@ -1,10 +1,10 @@
 <?php
-namespace Bobby\Network;
+namespace Bobby\Servers;
 
-use Bobby\Network\Exceptions\SocketReadFailedException;
-use Bobby\Network\Exceptions\InvalidArgumentException;
+use Bobby\Servers\Exceptions\SocketReadFailedException;
+use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\ParserContract;
-use Bobby\Network\Contracts\ConnectionContract;
+use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\ServerNetworkProtocol\Tcp\Parser;
 
 class Connection implements ConnectionContract
