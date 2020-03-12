@@ -23,7 +23,23 @@ class Server extends TcpServer
         });
 
         $this->on(self::RECEIVE_EVENT, function (Server $server, Connection $connection, Request $request) {
+            $request->server['REMOTE_ADDR'] = substr($remoteAddress = $connection->getRemoteAddress(), 0, strpos($remoteAddress, ':'));
+            $request->server['REMOTE_PORT'] = (int)substr($remoteAddress, strpos(':', $remoteAddress));
+
             $this->emitOnRequest($connection, $request);
+
+            if (
+                (isset($request->header['connection']) && $request->header['connection'] === 'close') ||
+                (isset($request->header['Connection']) && $request->header['Connection'] === 'close')
+            ) {
+                $this->close($connection);
+            }
+
+            foreach ($request->uploadedFileTempNames as $tempFileName) {
+                if (file_exists($tempFileName)) {
+                    unset($tempFileName);
+                }
+            }
         });
 
         $this->resetOnAllowEvents();
@@ -36,7 +52,7 @@ class Server extends TcpServer
 
     protected function emitOnRequest(Connection $connection, Request $request)
     {
-        $this->eventHandler->trigger(static::REQUEST_EVENT, $this, $connection, $request, new Response());
+        $this->eventHandler->trigger(static::REQUEST_EVENT, $this, $request, new Response($this, $connection));
     }
 
     protected function upgradeConnectionProtocolToHttp(ConnectionContract $connection)

@@ -4,23 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35d62f6f3036c87b1f1ee0852eb694f6",
+    "content-hash": "cec19dc37874b016599bb38ccaa7ce07",
     "packages": [
+        {
+            "name": "bobby/array-special-helper",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/995933447/array-speical-helper.git",
+                "reference": "d2cb309e210399ee89aa53302f86c35dffaf9f2b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/995933447/array-speical-helper/zipball/d2cb309e210399ee89aa53302f86c35dffaf9f2b",
+                "reference": "d2cb309e210399ee89aa53302f86c35dffaf9f2b",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bobby\\ArraySpecialHelper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "bobby",
+                    "email": "995933447@qq.com"
+                }
+            ],
+            "description": "Some special algorithm help to use array",
+            "time": "2020-03-11T05:04:58+00:00"
+        },
         {
             "name": "bobby/server-network-protocol",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/995933447/php-server-network-protocol.git",
-                "reference": "08ca5989f4dfac75cb410704529b7531d6e2493e"
+                "reference": "b1415c7fea4fc59f3cc2c24b2aaf2fdefe904e8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/08ca5989f4dfac75cb410704529b7531d6e2493e",
-                "reference": "08ca5989f4dfac75cb410704529b7531d6e2493e",
+                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/b1415c7fea4fc59f3cc2c24b2aaf2fdefe904e8e",
+                "reference": "b1415c7fea4fc59f3cc2c24b2aaf2fdefe904e8e",
                 "shasum": ""
             },
             "require": {
+                "bobby/array-special-helper": "master-dev",
                 "ext-json": "*"
             },
             "require-dev": {
@@ -44,7 +78,7 @@
                 }
             ],
             "description": "Server network protocol parsers",
-            "time": "2020-03-07T09:20:19+00:00"
+            "time": "2020-03-12T04:16:21+00:00"
         },
         {
             "name": "bobby/stream-event-loop",
@@ -85,18 +119,19 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "bobby/stream-event-loop": 20,
         "bobby/server-network-protocol": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "ext-sockets": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "ext-zlib": "*"
     },
     "platform-dev": []
 }

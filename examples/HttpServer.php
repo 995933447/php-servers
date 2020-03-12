@@ -8,14 +8,30 @@ $http = new \Bobby\Servers\Http\Server($serveSocket, $config, $loop);
 
 $http->on(\Bobby\Servers\Http\Server::REQUEST_EVENT, function (
     \Bobby\Servers\Http\Server $server,
-    \Bobby\Servers\Connection $connection,
-    \Bobby\ServerNetworkProtocol\Http\Request $request
+    \Bobby\ServerNetworkProtocol\Http\Request $request,
+    \Bobby\Servers\Http\Response $response
 ) {
     $request->compressToEnv();
-    var_dump($_POST, $_GET, $_FILES,$_SERVER, $_FILES);
-    $server->send($connection->exportStream(), "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOk");
-});
+    var_dump($_POST, $_GET, $_FILES, $_SERVER, $_FILES);
+    $response
+        ->gzip(5)
+        ->header('Vary', 'Accept-Encoding')
+        ->header('Content-Type', 'text/html; charset=UTF-8')
+        ->end("how are you34567~~~你好啊是");
 
+//    $response->redirect('http://www.baidu.com/');
+//
+//    $response
+//        ->header('Content-Type', 'text/html; charset=UTF-8')
+//        ->header("Extract", 1)
+//        ->cookie("PHPSSID", 123)
+//        ->chunk('分段传输失败')
+//        ->chunk("Hello world!!!!~")
+//        ->chunk("Yoyo.")
+//        ->chunk("PHP is best language.")
+//        ->chunk("分块完成")
+//        ->end();
+});
 
 $http->listen();
 $loop->poll();

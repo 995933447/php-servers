@@ -12,6 +12,7 @@ use Bobby\Servers\SendingBufferPool;
 use Bobby\Servers\ServerConfig;
 use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Exceptions\SocketEofException;
+use Bobby\Servers\Socket;
 use Bobby\Servers\Utils\EventHandler;
 use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\Tcp\Parser;
@@ -270,5 +271,10 @@ class Server extends ServerContract
     protected function emitOnError(ConnectionContract $connection, \Throwable $exception)
     {
         $this->eventHandler->trigger(static::ERROR_EVENT, $this, $connection, $exception);
+    }
+
+    public function getServeSocket(): SocketContract
+    {
+        return $this->serveSocket;
     }
 }
