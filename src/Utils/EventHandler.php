@@ -16,8 +16,13 @@ class EventHandler
 
     public function trigger(string $event, ...$args)
     {
-        if (isset($this->listen[$event])) {
+        if ($this->exist($event)) {
             call_user_func_array($this->listen[$event], $args);
         }
+    }
+
+    public function exist(string $event): bool
+    {
+        return isset($this->listen[$event]);
     }
 }

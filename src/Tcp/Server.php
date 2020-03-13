@@ -40,10 +40,13 @@ class Server extends ServerContract
 
     protected $sendingBuffers;
 
+    protected $readyCloseConnections;
+
     public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
     {
         parent::__construct($serveSocket, $config, $eventLoop);
 
+        $this->readyCloseConnections = new ConnectionPool();
         $this->connections = new ConnectionPool();
         $this->eventHandler = new EventHandler();
         $this->sendingBuffers = new SendingBufferPool();
@@ -78,20 +81,22 @@ class Server extends ServerContract
 
     public function close(ConnectionContract $connection, bool $force = false)
     {
-        $removeEventLoopEvents = LoopContract::READ_EVENT;
+        $this->connections->remove($connection);
+
         $stream = $connection->exportStream();
+        $removeLoopEvents = LoopContract::READ_EVENT;
 
         if (!$force && $this->sendingBuffers->exist($stream)) {
             $connection->readyClose();
+            $this->readyCloseConnections->add($connection);
         } else {
-            $removeEventLoopEvents |= LoopContract::WRITE_EVENT;
+            $removeLoopEvents |= LoopContract::WRITE_EVENT;
             $connection->close();
-            $this->connections->remove($connection);
             $this->sendingBuffers->remove($stream);
             $this->emitOnClose($connection);
         }
 
-        $this->eventLoop->removeLoopStream($removeEventLoopEvents, $stream);
+        $this->eventLoop->removeLoopStream($removeLoopEvents, $stream);
     }
 
     public function send($stream, string $message): bool
@@ -131,7 +136,8 @@ class Server extends ServerContract
         restore_error_handler();
 
         if (!is_null($writeException)) {
-            $this->emitOnError($this->connections->get($stream), $writeException);
+            $connection = $this->connections->get($stream)?: $this->readyCloseConnections->get($stream);
+            $this->emitOnError($connection, $writeException);
         } else if ($written < strlen($message)) {
             $this->sendingBuffers->set($stream, substr($message, $written));
             $this->eventLoop->addLoopStream(LoopContract::WRITE_EVENT, $stream, function ($stream) {
@@ -141,13 +147,13 @@ class Server extends ServerContract
             $this->eventLoop->removeLoopStream(LoopContract::WRITE_EVENT, $stream);
             $this->sendingBuffers->remove($stream);
 
-            if (($connection = $this->connections->get($stream))->isReadyClose()) {
-                $this->close($connection);
+            if ($this->readyCloseConnections->exist($stream)) {
+                $this->close($this->readyCloseConnections->get($stream));
             }
         }
     }
 
-    protected function sslShake(ConnectionContract $connection): bool
+    protected function sslShakeWith(ConnectionContract $connection): bool
     {
         $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_SERVER;
         if (PHP_VERSION_ID < 70200 && PHP_VERSION_ID >= 50600) {
@@ -195,7 +201,7 @@ class Server extends ServerContract
         $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $connectSocketStream, function ($connectSocketStream) {
             $connection = $this->connections->get($connectSocketStream);
             if ($this->serveSocket->isOpenedSsl() && !$connection->isOpenedSsl()) {
-                $this->sslShake($connection);
+                $this->sslShakeWith($connection);
             }
             $this->receive($connection);
         });

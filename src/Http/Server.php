@@ -18,6 +18,13 @@ class Server extends TcpServer
     {
         parent::__construct($serveSocket, $config, $eventLoop);
 
+        $this->setHttpServerMustListenEvent();
+
+        $this->resetAllowListenEvents();
+    }
+
+    protected function setHttpServerMustListenEvent()
+    {
         $this->on(self::CONNECT_EVENT, function (Server $server, ConnectionContract $connection) {
             $this->upgradeConnectionProtocolToHttp($connection);
         });
@@ -41,11 +48,9 @@ class Server extends TcpServer
                 }
             }
         });
-
-        $this->resetOnAllowEvents();
     }
 
-    protected function resetOnAllowEvents()
+    protected function resetAllowListenEvents()
     {
         $this->allowEvents = [static::REQUEST_EVENT, self::ERROR_EVENT, self::CLOSE_EVENT];
     }

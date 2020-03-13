@@ -32,6 +32,11 @@ class Connection implements ConnectionContract
         $this->remoteAddress = $remoteAddress;
     }
 
+    public function setProtocolParser(ParserContract $protocolParser)
+    {
+        $this->protocolParser = $protocolParser;
+    }
+
     public function getProtocolParser(): ParserContract
     {
         return $this->protocolParser;
