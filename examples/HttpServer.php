@@ -25,11 +25,11 @@ $http->on(\Bobby\Servers\Http\Server::REQUEST_EVENT, function (
 //        ->header('Content-Type', 'text/html; charset=UTF-8')
 //        ->header("Extract", 1)
 //        ->cookie("PHPSSID", 123)
-//        ->chunk('分段传输失败')
+//        ->chunk("分段传输开始")
 //        ->chunk("Hello world!!!!~")
 //        ->chunk("Yoyo.")
 //        ->chunk("PHP is best language.")
-//        ->chunk("分块完成")
+//        ->chunk("最后一块")
 //        ->end();
 });
 
