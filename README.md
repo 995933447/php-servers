@@ -92,7 +92,7 @@ $websocket->on(\Bobby\Servers\Websocket\Server::OPEN_EVENT, function (
     \Bobby\Servers\Connection $connection,
     \Bobby\ServerNetworkProtocol\Http\Request $request
 ) {
-    echo "Socket:" . $connection->exportStream() . " opened.\n";
+    echo "Socket:" . $connection->exportStream() . " opened", PHP_EOL;
 });
 
 $websocket->on(\Bobby\Servers\Websocket\Server::MESSAGE_EVENT, function (
