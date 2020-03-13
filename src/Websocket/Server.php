@@ -11,6 +11,7 @@ use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\Http\Server as HttpServer;
 use Bobby\Servers\ServerConfig;
 use Bobby\StreamEventLoop\LoopContract;
+use Bobby\ServerNetworkProtocol\Websocket\OpcodeEnum;
 
 class Server extends HttpServer
 {
@@ -18,13 +19,15 @@ class Server extends HttpServer
 
     const OPEN_EVENT = 'open';
 
-    protected $shackedConnections;
+    const PING_EVENT = 'ping';
+
+    protected $shookConnections;
 
     protected $pusher;
 
     public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
     {
-        $this->shackedConnections = new ConnectionPool();
+        $this->shookConnections = new ConnectionPool();
 
         $this->pusher = new Pusher($this);
 
@@ -36,9 +39,9 @@ class Server extends HttpServer
         return $this->pusher;
     }
 
-    public function getShakedConnections(): ConnectionPool
+    public function getShookConnections(): ConnectionPool
     {
-        return $this->shackedConnections;
+        return $this->shookConnections;
     }
 
     protected function resetAllowListenEvents()
@@ -61,7 +64,24 @@ class Server extends HttpServer
 
     protected function dealWebsocketRequest(Connection $connection, Frame $frame)
     {
-        $this->emitOnMessage($connection, $frame);
+        switch ($frame->opcode) {
+            case OpcodeEnum::PING:
+                if (!$this->eventHandler->exist(static::PING_EVENT)) {
+                    $this->pusher->pong($connection);
+                } else {
+                    $this->emitOnPong($connection);
+                }
+                break;
+            case OpcodeEnum::OUT_CONNECT:
+                $this->close($connection);
+                $this->emitOnClose($connection);
+                break;
+            case OpcodeEnum::BINARY:
+            case OpcodeEnum::TEXT:
+            case OpcodeEnum::PONG:
+            case OpcodeEnum::SEGMENT:
+                $this->emitOnMessage($connection, $frame);
+        }
     }
 
     protected function dealHttpRequest(Connection $connection, Request $request)
@@ -108,11 +128,11 @@ class Server extends HttpServer
         $upgradeHeader .= "Connection: Upgrade\r\n";
         $upgradeHeader .= "Sec-WebSocket-Accept: $newSecurityKey\r\n\r\n";
 
-        $this->send($connection->exportStream(), $upgradeHeader);
+        $this->send($connection, $upgradeHeader);
 
         $connection->setProtocolParser(new Parser($this->config->protocolOptions));
 
-        $this->shackedConnections->add($connection);
+        $this->shookConnections->add($connection);
 
         $this->emitOnOpen($connection, $request);
     }
@@ -120,7 +140,7 @@ class Server extends HttpServer
     public function close(ConnectionContract $connection, bool $force = false)
     {
         parent::close($connection, $force);
-        $this->shackedConnections->remove($connection);
+        $this->shookConnections->remove($connection);
     }
 
     protected function emitOnMessage(Connection $connection, Frame $frame)
@@ -131,5 +151,10 @@ class Server extends HttpServer
     protected function emitOnOpen(Connection $connection, Request $request)
     {
         $this->eventHandler->trigger(static::OPEN_EVENT, $this, $connection, $request);
+    }
+
+    protected function emitOnPong(Connection $connection)
+    {
+        $this->eventHandler->trigger(static::PING_EVENT, $this, $connection);
     }
 }

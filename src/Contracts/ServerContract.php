@@ -26,7 +26,10 @@ abstract class ServerContract
         return $this->eventLoop;
     }
 
-    abstract public function getConnections(): ?ConnectionPoolContract;
+    public function getServeSocket(): SocketContract
+    {
+        return $this->serveSocket;
+    }
 
     abstract public function on(string $event, callable $listener);
 
@@ -34,11 +37,5 @@ abstract class ServerContract
 
     abstract public function resume();
 
-    abstract public function close(ConnectionContract $connection, bool $force = false);
-
-    abstract public function send($stream, string $message): bool;
-
     abstract public function listen();
-
-    abstract public function getServeSocket(): SocketContract;
 }

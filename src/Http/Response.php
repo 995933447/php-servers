@@ -248,7 +248,7 @@ class Response
             $data = $this->getHeader() . $data;
         }
 
-        $this->server->send($this->connection->exportStream(), $data);
+        $this->server->send($this->connection, $data);
     }
 
     public function redirect(string $url, $statusCode = 302)

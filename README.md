@@ -21,7 +21,7 @@ $tcp->on(Server::CONNECT_EVENT, function (Server $server, ConnectionContract $co
 
 $tcp->on(Server::RECEIVE_EVENT, function (Server $server, ConnectionContract $connection, $data) {
     echo "Receive message:$data", PHP_EOL;
-    $server->send($connection->exportStream(), "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nHi");
+    $server->send($connection, "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nHi");
     $server->close($connection);
 });
 
@@ -65,7 +65,7 @@ $http->on(\Bobby\Servers\Http\Server::REQUEST_EVENT, function (
 //        ->header('Content-Type', 'text/html; charset=UTF-8')
 //        ->header("Extract", 1)
 //        ->cookie("PHPSSID", 123)
-//        ->chunk('分段传输开始')
+//        ->chunk("分段传输开始")
 //        ->chunk("Hello world!!!!~")
 //        ->chunk("Yoyo.")
 //        ->chunk("PHP is best language.")
@@ -92,7 +92,7 @@ $websocket->on(\Bobby\Servers\Websocket\Server::OPEN_EVENT, function (
     \Bobby\Servers\Connection $connection,
     \Bobby\ServerNetworkProtocol\Http\Request $request
 ) {
-    echo "Socket:" . $connection->exportStream() . " opened", PHP_EOL;
+    echo "Socket:" . $connection->exportStream() . " opened.\n";
 });
 
 $websocket->on(\Bobby\Servers\Websocket\Server::MESSAGE_EVENT, function (
@@ -100,10 +100,12 @@ $websocket->on(\Bobby\Servers\Websocket\Server::MESSAGE_EVENT, function (
     \Bobby\Servers\Connection $connection,
     \Bobby\ServerNetworkProtocol\Websocket\Frame $frame
 ) {
-    $data = json_decode($frame->payloadData);
-    $data->time = date('Y-m-d H:i:s');
-    $data = json_encode($data);
-    $server->getPusher()->pushString($connection, $data);
+    foreach ($server->getShookConnections() as $connection) {
+        $data = json_decode($frame->payloadData);
+        $data->time = date('Y-m-d H:i:s');
+        $data = json_encode($data);
+        $server->getPusher()->pushString($connection, $data);
+    }
 });
 
 $websocket->on(\Bobby\Servers\Websocket\Server::REQUEST_EVENT, function (
@@ -112,7 +114,7 @@ $websocket->on(\Bobby\Servers\Websocket\Server::REQUEST_EVENT, function (
     \Bobby\Servers\Http\Response $response
 ) {
     if (isset($request->get['msg'])) {
-        foreach ($server->getShakedConnections() as $connection) {
+        foreach ($server->getShookConnections() as $connection) {
             $data = json_encode(['content' => $request->get['msg'], 'username' => 'admin', 'type' => 2, 'time' => date('Y-m-d H:i:s')]);
             $server->getPusher()->pushString($connection, $data);
         }

@@ -12,7 +12,6 @@ use Bobby\Servers\SendingBufferPool;
 use Bobby\Servers\ServerConfig;
 use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Exceptions\SocketEofException;
-use Bobby\Servers\Socket;
 use Bobby\Servers\Utils\EventHandler;
 use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\Tcp\Parser;
@@ -99,24 +98,24 @@ class Server extends ServerContract
         $this->eventLoop->removeLoopStream($removeLoopEvents, $stream);
     }
 
-    public function send($stream, string $message): bool
+    public function send(ConnectionContract $connection, string $message): bool
     {
-        if (!is_resource($stream) || is_null($connection = $this->connections->get($stream)) || $connection->isClosed() || $connection->isPaused()) {
+        if ($connection->isClosed() || $connection->isPaused()) {
             return false;
         }
 
-        $this->sendingBuffers->add($stream, $message);
+        $this->sendingBuffers->add($connection->exportStream(), $message);
 
         if (!$this->serveSocket->isOpenedSsl() || $connection->isOpenedSsl()) {
-            $this->writeTo($stream);
+            $this->writeTo($connection);
         }
 
         return true;
     }
 
-    public function writeTo($stream)
+    public function writeTo(ConnectionContract $connection)
     {
-        if (!$this->sendingBuffers->exist($stream)) {
+        if (!$this->sendingBuffers->exist($stream = $connection->exportStream())) {
             return;
         }
 
@@ -136,7 +135,6 @@ class Server extends ServerContract
         restore_error_handler();
 
         if (!is_null($writeException)) {
-            $connection = $this->connections->get($stream)?: $this->readyCloseConnections->get($stream);
             $this->emitOnError($connection, $writeException);
         } else if ($written < strlen($message)) {
             $this->sendingBuffers->set($stream, substr($message, $written));
@@ -148,7 +146,7 @@ class Server extends ServerContract
             $this->sendingBuffers->remove($stream);
 
             if ($this->readyCloseConnections->exist($stream)) {
-                $this->close($this->readyCloseConnections->get($stream));
+                $this->close($connection);
             }
         }
     }
@@ -277,10 +275,5 @@ class Server extends ServerContract
     protected function emitOnError(ConnectionContract $connection, \Throwable $exception)
     {
         $this->eventHandler->trigger(static::ERROR_EVENT, $this, $connection, $exception);
-    }
-
-    public function getServeSocket(): SocketContract
-    {
-        return $this->serveSocket;
     }
 }

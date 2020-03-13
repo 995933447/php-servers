@@ -45,12 +45,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/995933447/php-server-network-protocol.git",
-                "reference": "b1415c7fea4fc59f3cc2c24b2aaf2fdefe904e8e"
+                "reference": "d0306921ec9b6b8aa93a9b441f9df132ebb7430f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/b1415c7fea4fc59f3cc2c24b2aaf2fdefe904e8e",
-                "reference": "b1415c7fea4fc59f3cc2c24b2aaf2fdefe904e8e",
+                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/d0306921ec9b6b8aa93a9b441f9df132ebb7430f",
+                "reference": "d0306921ec9b6b8aa93a9b441f9df132ebb7430f",
                 "shasum": ""
             },
             "require": {
@@ -78,7 +78,7 @@
                 }
             ],
             "description": "Server network protocol parsers",
-            "time": "2020-03-12T04:16:21+00:00"
+            "time": "2020-03-13T08:44:55+00:00"
         },
         {
             "name": "bobby/stream-event-loop",
@@ -86,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/995933447/php-stream-event-loop.git",
-                "reference": "f944f0363fbc60f32561ddb9831ac21a186e3052"
+                "reference": "c6a807ea79c2d8be2fcb97e10443b9ab298bcbff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/995933447/php-stream-event-loop/zipball/f944f0363fbc60f32561ddb9831ac21a186e3052",
-                "reference": "f944f0363fbc60f32561ddb9831ac21a186e3052",
+                "url": "https://api.github.com/repos/995933447/php-stream-event-loop/zipball/c6a807ea79c2d8be2fcb97e10443b9ab298bcbff",
+                "reference": "c6a807ea79c2d8be2fcb97e10443b9ab298bcbff",
                 "shasum": ""
             },
             "require": {
@@ -114,7 +114,7 @@
                 }
             ],
             "description": "stream函数开发的异步非阻塞IO事件循环组件",
-            "time": "2020-03-09T06:29:17+00:00"
+            "time": "2020-03-13T05:45:58+00:00"
         }
     ],
     "packages-dev": [],

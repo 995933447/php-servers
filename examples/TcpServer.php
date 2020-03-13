@@ -18,7 +18,7 @@ $tcp->on(Server::CONNECT_EVENT, function (Server $server, ConnectionContract $co
 
 $tcp->on(Server::RECEIVE_EVENT, function (Server $server, ConnectionContract $connection, $data) {
     echo "Receive message:$data", PHP_EOL;
-    $server->send($connection->exportStream(), "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nHi");
+    $server->send($connection, "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nHi");
     $server->close($connection);
 });
 

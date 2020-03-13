@@ -14,26 +14,26 @@ class Pusher
 
     public function ping(Connection $connection)
     {
-        $this->server->send($connection->exportStream(), Frame::encode(OpcodeEnum::PING, ''));
+        $this->server->send($connection, Frame::encode(OpcodeEnum::PING, ''));
     }
 
     public function pong(Connection $connection)
     {
-        $this->server->send($connection->exportStream(), Frame::encode(OpcodeEnum::PONG, ''));
+        $this->server->send($connection, Frame::encode(OpcodeEnum::PONG, ''));
     }
 
     public function pushString(Connection $connection, string $message)
     {
-        $this->server->send($connection->exportStream(), Frame::encode(OpcodeEnum::TEXT, $message));
+        $this->server->send($connection, Frame::encode(OpcodeEnum::TEXT, $message));
     }
 
     public function pushFile(Connection $connection, string $message)
     {
-        $this->server->send($connection->exportStream(), Frame::encode(OpcodeEnum::BINARY, $message));
+        $this->server->send($connection, Frame::encode(OpcodeEnum::BINARY, $message));
     }
 
     public function notifyClose(Connection $connection)
     {
-        $this->server->send($connection->exportStream(), Frame::encode(OpcodeEnum::OUT_CONNECT, ''));
+        $this->server->send($connection, Frame::encode(OpcodeEnum::OUT_CONNECT, ''));
     }
 }

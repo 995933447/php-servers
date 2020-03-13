@@ -20,10 +20,12 @@ $websocket->on(\Bobby\Servers\Websocket\Server::MESSAGE_EVENT, function (
     \Bobby\Servers\Connection $connection,
     \Bobby\ServerNetworkProtocol\Websocket\Frame $frame
 ) {
-    $data = json_decode($frame->payloadData);
-    $data->time = date('Y-m-d H:i:s');
-    $data = json_encode($data);
-    $server->getPusher()->pushString($connection, $data);
+    foreach ($server->getShookConnections() as $connection) {
+        $data = json_decode($frame->payloadData);
+        $data->time = date('Y-m-d H:i:s');
+        $data = json_encode($data);
+        $server->getPusher()->pushString($connection, $data);
+    }
 });
 
 $websocket->on(\Bobby\Servers\Websocket\Server::REQUEST_EVENT, function (
@@ -32,7 +34,7 @@ $websocket->on(\Bobby\Servers\Websocket\Server::REQUEST_EVENT, function (
     \Bobby\Servers\Http\Response $response
 ) {
     if (isset($request->get['msg'])) {
-        foreach ($server->getShakedConnections() as $connection) {
+        foreach ($server->getShookConnections() as $connection) {
             $data = json_encode(['content' => $request->get['msg'], 'username' => 'admin', 'type' => 2, 'time' => date('Y-m-d H:i:s')]);
             $server->getPusher()->pushString($connection, $data);
         }
