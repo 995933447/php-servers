@@ -1,24 +1,25 @@
 <?php
-namespace Bobby\Servers\Tcp;
+namespace Bobby\Servers\Unix;
 
+use Bobby\ServerNetworkProtocol\Tcp\Parser;
 use Bobby\Servers\Connection;
-use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\Servers\ConnectionPool;
+use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\Servers\Contracts\ConnectionPoolContract;
+use Bobby\Servers\Contracts\ServerConfigContract;
+use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Contracts\SocketContract;
+use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\Servers\Exceptions\ReceiveBufferFullException;
 use Bobby\Servers\Exceptions\SocketWriteFailedException;
 use Bobby\Servers\SendingBufferPool;
 use Bobby\Servers\ServerConfig;
-use Bobby\Servers\Contracts\ServerContract;
-use Bobby\Servers\Exceptions\SocketEofException;
 use Bobby\Servers\Utils\EventHandler;
-use Bobby\Servers\Exceptions\InvalidArgumentException;
-use Bobby\ServerNetworkProtocol\Tcp\Parser;
 use Bobby\StreamEventLoop\LoopContract;
 
 class Server extends ServerContract
 {
+
     const CONNECT_EVENT = 'connect';
 
     const RECEIVE_EVENT = 'receive';
@@ -27,7 +28,7 @@ class Server extends ServerContract
 
     const ERROR_EVENT = 'error';
 
-    protected $connections;
+    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT];
 
     protected $eventHandler;
 
@@ -35,7 +36,7 @@ class Server extends ServerContract
 
     protected $isPaused = false;
 
-    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT];
+    protected $connections;
 
     protected $sendingBuffers;
 
@@ -74,7 +75,7 @@ class Server extends ServerContract
     public function resume()
     {
         $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $this->server, function () {
-           $this->accept();
+            $this->accept();
         });
     }
 
@@ -151,34 +152,23 @@ class Server extends ServerContract
         }
     }
 
-    protected function sslShakeWith(ConnectionContract $connection): bool
+    public function listen()
     {
-        $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_SERVER;
-        if (PHP_VERSION_ID < 70200 && PHP_VERSION_ID >= 50600) {
-            $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_0_SERVER | STREAM_CRYPTO_METHOD_TLSv1_1_SERVER | STREAM_CRYPTO_METHOD_TLSv1_2_SERVER;
-        }
+       $this->server = stream_socket_server(
+           "unix://{$this->serveSocket->getAddress()}",
+           $errno,
+           $error,
+           STREAM_SERVER_BIND | STREAM_SERVER_LISTEN,
+           $this->serveSocket->getContext()
+       );
 
-        $sslShackException = null;
-        set_error_handler(function ($errno, $error, $file, $line) use ($sslShackException) {
-            $sslShackException = new SocketEofException("Unable to complete TLS handshake:$error", $errno, $file, $line);
-        });
+       if (!$this->server) {
+           throw new \RuntimeException($error, $errno);
+       }
 
-        $result = stream_socket_enable_crypto($connection->exportStream(), true, $cryptoMethod);
-
-        restore_error_handler();
-
-        if ($result === false) {
-            $this->emitOnError($connection, $sslShackException?: new SocketEofException('Connection lost during TLS handshake'));
-            $this->close($connection, true);
-            return false;
-        }
-
-        $connection->openedSsl();
-        if ($this->sendingBuffers->exist($stream = $connection->exportStream())) {
-           $this->writeTo($stream);
-        }
-
-        return true;
+       $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $this->server, function () {
+            $this->accept();
+       });
     }
 
     protected function accept()
@@ -191,16 +181,13 @@ class Server extends ServerContract
         }
 
         stream_set_blocking($connectSocketStream, false);
-
         $connection = new Connection($connectSocketStream, $remoteAddress, new Parser($this->config->protocolOptions));
         $this->connections->add($connection);
         $this->emitOnConnect($connection);
 
         $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $connectSocketStream, function ($connectSocketStream) {
             $connection = $this->connections->get($connectSocketStream);
-            if ($this->serveSocket->isOpenedSsl() && !$connection->isOpenedSsl()) {
-                $this->sslShakeWith($connection);
-            }
+
             $this->receive($connection);
         });
     }
@@ -230,31 +217,6 @@ class Server extends ServerContract
                 $this->emitOnError($connection, new ReceiveBufferFullException());
             }
         }
-    }
-
-    public function listen()
-    {
-        stream_context_set_option($this->serveSocket->getContext(), 'socket', 'so_reuseport', 1);
-
-        $this->server = stream_socket_server(
-            "tcp://" . $this->serveSocket->getAddress(),
-            $errno,
-            $error,
-            STREAM_SERVER_BIND | STREAM_SERVER_LISTEN,
-            $this->serveSocket->getContext()
-        );
-
-        if ($this->server === false) {
-            throw new \RuntimeException($error, $errno);
-        }
-
-        $socket = socket_import_stream($this->server);
-        socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1);
-        socket_set_option($socket, SOL_SOCKET, SO_KEEPALIVE, 1);
-
-        $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $this->server, function () {
-            $this->accept();
-        });
     }
 
     protected function emitOnReceive(ConnectionContract $connection, $message)

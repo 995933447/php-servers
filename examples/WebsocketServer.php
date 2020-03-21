@@ -3,7 +3,7 @@ require __DIR__ . "/../vendor/autoload.php";
 
 $loop = \Bobby\StreamEventLoop\LoopFactory::make();
 
-$serveSocket = new \Bobby\Servers\Socket("0.0.0.0:80");
+$serveSocket = new \Bobby\Servers\Socket("0.0.0.0:9501");
 $config = new \Bobby\Servers\ServerConfig();
 $websocket = new Bobby\Servers\Websocket\Server($serveSocket, $config, $loop);
 

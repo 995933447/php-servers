@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
     "content-hash": "cec19dc37874b016599bb38ccaa7ce07",
@@ -45,12 +45,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/995933447/php-server-network-protocol.git",
-                "reference": "d0306921ec9b6b8aa93a9b441f9df132ebb7430f"
+                "reference": "90ff2e21647d3ef7c46c5ced9c6ebafc225ca046"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/d0306921ec9b6b8aa93a9b441f9df132ebb7430f",
-                "reference": "d0306921ec9b6b8aa93a9b441f9df132ebb7430f",
+                "url": "https://api.github.com/repos/995933447/php-server-network-protocol/zipball/90ff2e21647d3ef7c46c5ced9c6ebafc225ca046",
+                "reference": "90ff2e21647d3ef7c46c5ced9c6ebafc225ca046",
                 "shasum": ""
             },
             "require": {
@@ -78,7 +78,7 @@
                 }
             ],
             "description": "Server network protocol parsers",
-            "time": "2020-03-13T08:44:55+00:00"
+            "time": "2020-03-13T09:04:47+00:00"
         },
         {
             "name": "bobby/stream-event-loop",

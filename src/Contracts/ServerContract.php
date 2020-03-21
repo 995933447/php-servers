@@ -10,8 +10,6 @@ abstract class ServerContract
 
     protected $config;
 
-    protected $server;
-
     protected $eventLoop;
 
     public function __construct(SocketContract $serveSocket, ServerConfigContract $config, LoopContract $eventLoop)

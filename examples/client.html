@@ -102,7 +102,7 @@
     if (!window.WebSocket){
         alert("This browser does not support WebSocket.");
     }
-    var websocket = new WebSocket('ws://192.168.56.128');
+    var websocket = new WebSocket('ws://127.0.0.1:9501');
     websocket.onopen = function(e){
         console.log(e)
         websocket.send(JSON.stringify({username:username,type:1}));
