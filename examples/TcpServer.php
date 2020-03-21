@@ -8,7 +8,7 @@ use Bobby\Servers\Tcp\Server;
 use Bobby\Servers\Contracts\ConnectionContract;
 
 $loop = LoopFactory::make();
-$serveSocket = new Socket("0.0.0.0:80");
+$serveSocket = new Socket("0.0.0.0:9501");
 $config = new ServerConfig();
 $tcp = new Server($serveSocket, $config, $loop);
 

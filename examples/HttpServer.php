@@ -13,6 +13,7 @@ $http->on(\Bobby\Servers\Http\Server::REQUEST_EVENT, function (
 ) {
     $request->compressToEnv();
     var_dump($_POST, $_GET, $_FILES, $_SERVER, $_FILES);
+
     $response
         ->gzip(5)
         ->header('Vary', 'Accept-Encoding')

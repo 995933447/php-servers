@@ -48,6 +48,11 @@ class Server extends TcpServer
                 }
             }
         });
+
+        $this->on(self::CONNECT_FULL_EVENT, function (Server $server, Connection $connection) {
+            $response = new Response($this, $connection);
+            $response->status(ResponseCodeEnum::HTTP_SERVICE_UNAVAILABLE)->end();
+        });
     }
 
     protected function resetAllowListenEvents()

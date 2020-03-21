@@ -28,7 +28,9 @@ class Server extends ServerContract
 
     const ERROR_EVENT = 'error';
 
-    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT];
+    const CONNECT_FULL_EVENT = 'connect_full';
+
+    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT, self::CONNECT_FULL_EVENT];
 
     protected $eventHandler;
 
@@ -175,19 +177,21 @@ class Server extends ServerContract
     {
         $connectSocketStream = stream_socket_accept($this->server, 0, $remoteAddress);
 
+        stream_set_blocking($connectSocketStream, false);
+
+        $connection = new Connection($connectSocketStream, $remoteAddress, new Parser($this->config->protocolOptions));
+
         if (isset($this->config->serveOptions['max_connection']) && $this->config->serveOptions['max_connection'] <= $this->connections->count()) {
-            fclose($connectSocketStream);
+            $this->emitOnConnectFull($connection);
+            $this->close($connection);
             return;
         }
 
-        stream_set_blocking($connectSocketStream, false);
-        $connection = new Connection($connectSocketStream, $remoteAddress, new Parser($this->config->protocolOptions));
         $this->connections->add($connection);
         $this->emitOnConnect($connection);
 
         $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $connectSocketStream, function ($connectSocketStream) {
             $connection = $this->connections->get($connectSocketStream);
-
             $this->receive($connection);
         });
     }
@@ -237,5 +241,10 @@ class Server extends ServerContract
     protected function emitOnError(ConnectionContract $connection, \Throwable $exception)
     {
         $this->eventHandler->trigger(static::ERROR_EVENT, $this, $connection, $exception);
+    }
+
+    protected function emitOnConnectFull(ConnectionContract $connection)
+    {
+        $this->eventHandler->trigger(static::CONNECT_FULL_EVENT, $this, $connection);
     }
 }

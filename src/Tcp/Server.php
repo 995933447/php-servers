@@ -27,6 +27,8 @@ class Server extends ServerContract
 
     const ERROR_EVENT = 'error';
 
+    const CONNECT_FULL_EVENT = 'connect_full';
+
     protected $connections;
 
     protected $eventHandler;
@@ -35,7 +37,7 @@ class Server extends ServerContract
 
     protected $isPaused = false;
 
-    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT];
+    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT, self::CONNECT_EVENT];
 
     protected $sendingBuffers;
 
@@ -185,14 +187,16 @@ class Server extends ServerContract
     {
         $connectSocketStream = stream_socket_accept($this->server, 0, $remoteAddress);
 
-        if (isset($this->config->serveOptions['max_connection']) && $this->config->serveOptions['max_connection'] <= $this->connections->count()) {
-            fclose($connectSocketStream);
-            return;
-        }
-
         stream_set_blocking($connectSocketStream, false);
 
         $connection = new Connection($connectSocketStream, $remoteAddress, new Parser($this->config->protocolOptions));
+
+        if (isset($this->config->serveOptions['max_connection']) && $this->config->serveOptions['max_connection'] <= $this->connections->count()) {
+            $this->emitOnConnectFull($connection);
+            $this->close($connection);
+            return;
+        }
+
         $this->connections->add($connection);
         $this->emitOnConnect($connection);
 
@@ -275,5 +279,10 @@ class Server extends ServerContract
     protected function emitOnError(ConnectionContract $connection, \Throwable $exception)
     {
         $this->eventHandler->trigger(static::ERROR_EVENT, $this, $connection, $exception);
+    }
+
+    protected function emitOnConnectFull(ConnectionContract $connection)
+    {
+        $this->eventHandler->trigger(static::CONNECT_FULL_EVENT, $this, $connection);
     }
 }
