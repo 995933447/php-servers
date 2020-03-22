@@ -6,7 +6,6 @@ use Bobby\Servers\Connection;
 use Bobby\Servers\ConnectionPool;
 use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\Servers\Contracts\ConnectionPoolContract;
-use Bobby\Servers\Contracts\ServerConfigContract;
 use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\Exceptions\InvalidArgumentException;
@@ -14,7 +13,7 @@ use Bobby\Servers\Exceptions\ReceiveBufferFullException;
 use Bobby\Servers\Exceptions\SocketWriteFailedException;
 use Bobby\Servers\SendingBufferPool;
 use Bobby\Servers\ServerConfig;
-use Bobby\Servers\Utils\EventHandler;
+use Bobby\Servers\EventHandler;
 use Bobby\StreamEventLoop\LoopContract;
 
 class Server extends ServerContract

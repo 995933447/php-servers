@@ -12,7 +12,7 @@ use Bobby\Servers\SendingBufferPool;
 use Bobby\Servers\ServerConfig;
 use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Exceptions\SocketEofException;
-use Bobby\Servers\Utils\EventHandler;
+use Bobby\Servers\EventHandler;
 use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\Tcp\Parser;
 use Bobby\StreamEventLoop\LoopContract;

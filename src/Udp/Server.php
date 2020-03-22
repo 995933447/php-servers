@@ -1,14 +1,12 @@
 <?php
 namespace Bobby\Servers\Udp;
 
-use Bobby\Servers\Contracts\ConnectionContract;
-use Bobby\Servers\Contracts\ConnectionPoolContract;
 use Bobby\Servers\Contracts\ServerConfigContract;
 use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\Servers\Exceptions\SocketReadFailedException;
-use Bobby\Servers\Utils\EventHandler;
+use Bobby\Servers\EventHandler;
 use Bobby\StreamEventLoop\LoopContract;
 
 class Server extends ServerContract

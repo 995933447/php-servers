@@ -1,7 +1,6 @@
 <?php
 namespace Bobby\Servers\Contracts;
 
-use Bobby\Servers\Socket;
 use Bobby\StreamEventLoop\LoopContract;
 
 abstract class ServerContract

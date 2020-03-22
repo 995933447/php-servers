@@ -1,7 +1,9 @@
 <?php
-namespace Bobby\Servers\Utils;
+namespace Bobby\Servers;
 
-class EventHandler
+use Bobby\Servers\Contracts\EventHandlerContract;
+
+class EventHandler implements EventHandlerContract
 {
     protected $listen = [];
 
