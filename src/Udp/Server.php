@@ -31,7 +31,7 @@ class Server extends ServerContract
     public function on(string $event, callable $listener)
     {
         if (!in_array($event, $this->allowEvents)) {
-            throw InvalidArgumentException::defaultThrow("First event can not allow set.");
+            throw InvalidArgumentException::defaultThrow("Event $event can not allow set.");
         }
 
         $this->eventHandler->register($event, $listener);
