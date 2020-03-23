@@ -59,7 +59,7 @@ class Server extends ServerContract
         stream_context_set_option($this->serveSocket->getContext(), 'socket', 'so_reuseport', 1);
 
         $this->server = stream_socket_server(
-            "udp://" . $this->serveSocket->getAddress(),
+            "udp://{$this->serveSocket->getAddress()}",
             $errno,
             $error,
             STREAM_SERVER_BIND,

@@ -19,6 +19,7 @@ use Bobby\ServerNetworkProtocol\Tcp\Parser;
 
 abstract class ConnectionOrientedServerContract extends ServerContract
 {
+
     protected $transport;
 
     const CONNECT_EVENT = 'connect';
