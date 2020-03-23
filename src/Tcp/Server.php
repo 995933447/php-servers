@@ -37,7 +37,7 @@ class Server extends ServerContract
 
     protected $isPaused = false;
 
-    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT, self::CONNECT_EVENT];
+    protected $allowEvents = [self::CONNECT_EVENT, self::RECEIVE_EVENT, self::CLOSE_EVENT, self::ERROR_EVENT, self::CONNECT_EVENT, self::CONNECT_FULL_EVENT];
 
     protected $sendingBuffers;
 
