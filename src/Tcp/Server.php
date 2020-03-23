@@ -140,8 +140,8 @@ class Server extends ServerContract
             $this->emitOnError($connection, $writeException);
         } else if ($written < strlen($message)) {
             $this->sendingBuffers->set($stream, substr($message, $written));
-            $this->eventLoop->addLoopStream(LoopContract::WRITE_EVENT, $stream, function ($stream) {
-                $this->writeTo($stream);
+            $this->eventLoop->addLoopStream(LoopContract::WRITE_EVENT, $stream, function ($stream) use ($connection) {
+                $this->writeTo($connection);
             });
         } else {
             $this->eventLoop->removeLoopStream(LoopContract::WRITE_EVENT, $stream);
