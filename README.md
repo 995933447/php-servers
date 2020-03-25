@@ -205,9 +205,9 @@ $unixDomain->on(
 $unixDomain->listen();
 $loop->poll();
 ```
-####(以下仅说明常用api,其他api可以通过读源码获得)
-#基础公共类
-###Bobby\Servers\ServerConfig 服务器基础配置
+#### (以下仅说明常用api,其他api可以通过读源码获得)
+# 基础公共类
+### Bobby\Servers\ServerConfig 服务器基础配置
 method:\
 public function setProtocolOptions(array $protocolOptions)\
 用于配置如何解析从网络上收到的原始消息，比如处理粘包拆包，合包，解析websocket数据帧格式等。\
@@ -218,7 +218,7 @@ public function setServeOptions(array $serveOptions)
 参数:\
 $serveOptions array 用于server运行行为状态配置,不同类型server配置内容不同。
  
-###Bobby\Servers\Socket 用于表示运行服务器的socket对象。
+### Bobby\Servers\Socket 用于表示运行服务器的socket对象。
 method:\
 final public function __construct(string $address, array $context = [])\
 参数:\
@@ -234,7 +234,7 @@ public function getAddress(): string\
 public function getContext()\
 获取socket上下文。
 
-###Bobby\Servers\Connection 用于表示客户端和服务器维持的连接。
+### Bobby\Servers\Connection 用于表示客户端和服务器维持的连接。
 method:\
 public function isOpenedSsl(): bool\
 判断连接是否开启ssl加密。
@@ -260,13 +260,11 @@ public function isClosed(): bool\
 public function getLastReceiveTime(): ?int\
 获取上次读取连接数据的时间戳。null代表没有接收过数据。
 
-###Bobby\Servers\ConnectionPool
+### Bobby\Servers\ConnectionPool
 客户端和server的维持连接的Connection对象连接池送代器，可用于送代正在维持连接的Connection对象。
 
-###
-
-#TCP SERVE:
-###Bobby\Servers\Tcp\Server TCP服务器对象
+# TCP SERVE:
+### Bobby\Servers\Tcp\Server TCP服务器对象
 method:\
 public function __construct(Bobby\Servers\Contracts\SocketContract $serveSocket, Bobby\Servers\Contracts\ServerConfigContract $config, Bobby\StreamEventLoop\LoopContract $eventLoop)\
 参数:\
@@ -398,10 +396,10 @@ $tcp->listen();
 $loop->poll();
 ```
 
-#Unix Server方法同Tcp Server
+# Unix Server方法同Tcp Server
 
-#Http Server
-###Bobby\Servers\Http\Server HTTP服务器对象。继承自Bobby\Servers\Tcp\Server,拥有从Bobby\Servers\Tcp\Server继承的方法。
+# Http Server
+### Bobby\Servers\Http\Server HTTP服务器对象。继承自Bobby\Servers\Tcp\Server,拥有从Bobby\Servers\Tcp\Server继承的方法。
 和tcp server不同点:\
 构造函数参数Bobby\Servers\ServerConfig对象可设置配置项:
 ```
@@ -499,8 +497,8 @@ public function redirect(string $url, $statusCode = 302)\
 public function make(): Bobby\Servers\Http\Response\
 构造新的Response 对象。
 
-##Websocket server
-###Bobby\Servers\Websocket\Server Websocket服务器对象。继承自Bobby\Servers\Http\Server,拥有从Bobby\Servers\Http\Server继承的方法。
+## Websocket server
+### Bobby\Servers\Websocket\Server Websocket服务器对象。继承自Bobby\Servers\Http\Server,拥有从Bobby\Servers\Http\Server继承的方法。
 和http server不同点:\
 新增方法：
 public function getPusher(): Bobby\Servers\Websocket\Pusher
@@ -576,8 +574,8 @@ $websocket->on(\Bobby\Servers\Websocket\Server::PING_EVENT, function (
     $serer->getPusher()->pong($connection);
 });
 ```
-##UDP SERVER:
-###Bobby\Servers\Udp\Server UDP服务器对象
+## UDP SERVER:
+### Bobby\Servers\Udp\Server UDP服务器对象
 method:\
 public function __construct(Bobby\Servers\Contracts\SocketContract $serveSocket, Bobby\Servers\Contracts\ServerConfigContract $config, Bobby\StreamEventLoop\LoopContract $eventLoop)\
 参数:\
