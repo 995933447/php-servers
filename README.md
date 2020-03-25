@@ -502,7 +502,7 @@ public function make(): Bobby\Servers\Http\Response\
 和http server不同点:\
 新增方法：
 public function getPusher(): Bobby\Servers\Websocket\Pusher\
-获取websocket消息推送器。Bobby\Servers\Websocket\Pusher提供以下方法:
+获取websocket消息推送器。Bobby\Servers\Websocket\Pusher提供以下方法:\
 public function ping(Connection $connection)\
 发生ping包
 
