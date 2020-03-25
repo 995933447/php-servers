@@ -70,7 +70,7 @@ class Server extends HttpServer
                 if (!$this->eventHandler->exist(static::PING_EVENT)) {
                     $this->pusher->pong($connection);
                 } else {
-                    $this->emitOnPong($connection);
+                    $this->emitOnPing($connection);
                 }
                 break;
             case OpcodeEnum::OUT_CONNECT:
@@ -154,7 +154,7 @@ class Server extends HttpServer
         $this->eventHandler->trigger(static::OPEN_EVENT, $this, $connection, $request);
     }
 
-    protected function emitOnPong(Connection $connection)
+    protected function emitOnPing(Connection $connection)
     {
         $this->eventHandler->trigger(static::PING_EVENT, $this, $connection);
     }
