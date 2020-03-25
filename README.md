@@ -461,7 +461,7 @@ $http->on(\Bobby\Servers\Http\Server::ERROR_EVENT, function (\Bobby\Servers\Http
     die;
 });
 ```
-on request回调事件用到的对象:
+on request回调事件用到的对象:\
 Bobby\ServerNetworkProtocol\Http\Request 详见https://packagist.org/packages/bobby/server-network-protocol
 
 Bobby\Servers\Http\Response 响应对象。
