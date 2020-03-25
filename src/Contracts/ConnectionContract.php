@@ -5,11 +5,11 @@ interface ConnectionContract
 {
     public function openedSsl();
 
-    public function isOpenedSsl();
+    public function isOpenedSsl(): bool;
 
     public function exportStream();
 
-    public function isPaused();
+    public function isPaused(): bool;
 
     public function pause();
 

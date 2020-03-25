@@ -52,7 +52,7 @@ class Connection implements ConnectionContract
         }
     }
 
-    public function isOpenedSsl()
+    public function isOpenedSsl(): bool
     {
         return $this->isOpenedSsl;
     }
@@ -62,7 +62,7 @@ class Connection implements ConnectionContract
         return $this->stream;
     }
 
-    public function isPaused()
+    public function isPaused(): bool
     {
         return $this->isPaused;
     }
