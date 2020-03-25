@@ -25,6 +25,8 @@ interface ConnectionContract
 
     public function clearReceivedBuffer();
 
+    public function getLastReceiveTime(): ?int;
+
     public function getRemoteAddress(): string;
 
     public function readyClose();

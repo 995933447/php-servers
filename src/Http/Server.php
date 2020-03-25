@@ -1,6 +1,7 @@
 <?php
 namespace Bobby\Servers\Http;
 
+use Bobby\Servers\Http\ClearAliveConnectionTimerPool;
 use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\Tcp\Server as TcpServer;
@@ -14,6 +15,10 @@ class Server extends TcpServer
 {
     const REQUEST_EVENT = 'request';
 
+    const DEFAULT_KEEP_ALIVE_TIMEOUT = 60;
+
+    protected $clearConnectionTimerPool;
+
     public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
     {
         parent::__construct($serveSocket, $config, $eventLoop);
@@ -21,6 +26,14 @@ class Server extends TcpServer
         $this->setHttpServerMustListenEvent();
 
         $this->resetAllowListenEvents();
+    }
+
+    protected function getClearConnectionTimerPool(): ClearAliveConnectionTimerPool
+    {
+        if (is_null($this->clearConnectionTimerPool)) {
+            $this->clearConnectionTimerPool = new ClearAliveConnectionTimerPool();
+        }
+        return $this->clearConnectionTimerPool;
     }
 
     protected function setHttpServerMustListenEvent()
@@ -36,10 +49,23 @@ class Server extends TcpServer
             $this->emitOnRequest($connection, $request);
 
             if (
-                (isset($request->header['connection']) && $request->header['connection'] === 'close') ||
-                (isset($request->header['Connection']) && $request->header['Connection'] === 'close')
+                (!isset($request->header['connection']) || $request->header['connection'] !== 'keep-alive') &&
+                (!isset($request->header['Connection']) || $request->header['Connection'] !== 'keep-alive')
             ) {
                 $this->close($connection);
+            } else {
+                $keepAliveTimeout = $this->config->serveOptions['keep_alive_timeout']?? static::DEFAULT_KEEP_ALIVE_TIMEOUT;
+
+                $timerId = $this->getEventLoop()->addAfter($keepAliveTimeout, function () use ($connection, $keepAliveTimeout) {
+                    $this->getEventLoop()->removeLoopStream(LoopContract::READ_EVENT, $connection->exportStream());
+                    $this->getClearConnectionTimerPool()->remove($connection);
+                });
+
+                if ($this->getClearConnectionTimerPool()->exists($connection)) {
+                    $this->getEventLoop()->removeTimer($this->getClearConnectionTimerPool()->get($connection));
+                }
+
+                $this->getClearConnectionTimerPool()->save($connection, $timerId);
             }
 
             foreach ($request->uploadedFileTempNames as $tempFileName) {

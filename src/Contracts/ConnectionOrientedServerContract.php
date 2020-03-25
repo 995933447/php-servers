@@ -218,8 +218,12 @@ abstract class ConnectionOrientedServerContract extends ServerContract
             try {
                 $connection->receiveBuffer();
             } catch (\Exception $e) {
-                $this->emitOnError($connection, $e);
-                return;
+                if ($e instanceof SocketEofException) {
+                    $this->close($connection);
+                } else {
+                    $this->emitOnError($connection, $e);
+                    return;
+                }
             }
 
             try {

@@ -1,6 +1,7 @@
 <?php
 namespace Bobby\Servers;
 
+use Bobby\Servers\Exceptions\SocketEofException;
 use Bobby\Servers\Exceptions\SocketReadFailedException;
 use Bobby\Servers\Exceptions\InvalidArgumentException;
 use Bobby\ServerNetworkProtocol\ParserContract;
@@ -9,6 +10,8 @@ use Bobby\ServerNetworkProtocol\Tcp\Parser;
 
 class Connection implements ConnectionContract
 {
+    protected $lastReceiveTime;
+
     protected $stream;
 
     protected $protocolParser;
@@ -93,8 +96,12 @@ class Connection implements ConnectionContract
 
         restore_error_handler();
 
-        if ($data !== false) {
+        if ($data === '' && feof($this->stream)) {
+            $this->close();
+            throw new SocketEofException();
+        } if ($data !== false) {
             $this->protocolParser->input($data);
+            $this->lastReceiveTime = time();
             return strlen($data);
         } else if ($readException instanceof \Throwable) {
             throw $readException;
@@ -153,5 +160,10 @@ class Connection implements ConnectionContract
             $this->pause();
         }
         return $isClosed;
+    }
+
+    public function getLastReceiveTime(): ?int
+    {
+        return $this->lastReceiveTime;
     }
 }
