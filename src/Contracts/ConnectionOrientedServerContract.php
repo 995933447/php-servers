@@ -117,7 +117,7 @@ abstract class ConnectionOrientedServerContract extends ServerContract
         return true;
     }
 
-    public function writeTo(ConnectionContract $connection)
+    protected function writeTo(ConnectionContract $connection)
     {
         if (!$this->sendingBuffers->exist($stream = $connection->exportStream())) {
             return;
