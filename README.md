@@ -501,7 +501,7 @@ public function make(): Bobby\Servers\Http\Response\
 ### Bobby\Servers\Websocket\Server Websocket服务器对象。继承自Bobby\Servers\Http\Server,拥有从Bobby\Servers\Http\Server继承的方法。
 和http server不同点:\
 新增方法：
-public function getPusher(): Bobby\Servers\Websocket\Pusher
+public function getPusher(): Bobby\Servers\Websocket\Pusher\
 获取websocket消息推送器。Bobby\Servers\Websocket\Pusher提供以下方法:
 public function ping(Connection $connection)\
 发生ping包
@@ -559,6 +559,7 @@ $websocket->on(\Bobby\Servers\Websocket\Server::MESSAGE_EVENT, function (
     \Bobby\ServerNetworkProtocol\Websocket\Frame $frame
 ) {
     foreach ($server->getShookConnections() as $connection) {
+        // $frame->payloadData获取websocket客户端发送来的消息
         $data = json_decode($frame->payloadData);
         $data->time = date('Y-m-d H:i:s');
         $data = json_encode($data);
