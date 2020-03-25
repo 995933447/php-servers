@@ -6,7 +6,6 @@ use Bobby\Servers\ConnectionPool;
 use Bobby\Servers\Contracts\ConnectionPoolContract;
 use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\SendingBufferPool;
-use Bobby\Servers\ServerConfig;
 use Bobby\Servers\Contracts\ServerContract;
 use Bobby\Servers\Exceptions\SocketEofException;
 use Bobby\Servers\EventHandler;
@@ -46,7 +45,7 @@ abstract class ConnectionOrientedServerContract extends ServerContract
 
     protected $readyCloseConnections;
 
-    public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
+    public function __construct(SocketContract $serveSocket, ServerConfigContract $config, LoopContract $eventLoop)
     {
         parent::__construct($serveSocket, $config, $eventLoop);
 

@@ -25,7 +25,7 @@ class Socket implements SocketContract
         $this->context = stream_context_create($context);
     }
 
-    public function isOpenedSsl()
+    public function isOpenedSsl(): bool
     {
         return $this->isOpenedSsl;
     }

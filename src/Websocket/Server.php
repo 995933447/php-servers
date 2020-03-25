@@ -7,6 +7,7 @@ use Bobby\ServerNetworkProtocol\Websocket\Parser;
 use Bobby\Servers\Connection;
 use Bobby\Servers\ConnectionPool;
 use Bobby\Servers\Contracts\ConnectionContract;
+use Bobby\Servers\Contracts\ServerConfigContract;
 use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\Http\Server as HttpServer;
 use Bobby\Servers\ServerConfig;
@@ -25,7 +26,7 @@ class Server extends HttpServer
 
     protected $pusher;
 
-    public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
+    public function __construct(SocketContract $serveSocket, ServerConfigContract $config, LoopContract $eventLoop)
     {
         $this->shookConnections = new ConnectionPool();
 

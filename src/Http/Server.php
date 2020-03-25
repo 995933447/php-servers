@@ -1,6 +1,7 @@
 <?php
 namespace Bobby\Servers\Http;
 
+use Bobby\Servers\Contracts\ServerConfigContract;
 use Bobby\Servers\Http\ClearAliveConnectionTimerPool;
 use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\Servers\Contracts\SocketContract;
@@ -8,7 +9,6 @@ use Bobby\Servers\Tcp\Server as TcpServer;
 use Bobby\ServerNetworkProtocol\Http\Parser;
 use Bobby\ServerNetworkProtocol\Http\Request;
 use Bobby\StreamEventLoop\LoopContract;
-use Bobby\Servers\ServerConfig;
 use Bobby\Servers\Connection;
 
 class Server extends TcpServer
@@ -19,7 +19,7 @@ class Server extends TcpServer
 
     protected $clearConnectionTimerPool;
 
-    public function __construct(SocketContract $serveSocket, ServerConfig $config, LoopContract $eventLoop)
+    public function __construct(SocketContract $serveSocket, ServerConfigContract $config, LoopContract $eventLoop)
     {
         parent::__construct($serveSocket, $config, $eventLoop);
 
