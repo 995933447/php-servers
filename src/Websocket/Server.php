@@ -10,7 +10,6 @@ use Bobby\Servers\Contracts\ConnectionContract;
 use Bobby\Servers\Contracts\ServerConfigContract;
 use Bobby\Servers\Contracts\SocketContract;
 use Bobby\Servers\Http\Server as HttpServer;
-use Bobby\Servers\ServerConfig;
 use Bobby\StreamEventLoop\LoopContract;
 use Bobby\ServerNetworkProtocol\Websocket\OpcodeEnum;
 
@@ -21,6 +20,8 @@ class Server extends HttpServer
     const OPEN_EVENT = 'open';
 
     const PING_EVENT = 'ping';
+
+    const PONG_EVENT = 'pong';
 
     protected $shookConnections;
 
@@ -47,7 +48,7 @@ class Server extends HttpServer
 
     protected function resetAllowListenEvents()
     {
-        $this->allowEvents = [static::OPEN_EVENT, static::MESSAGE_EVENT, static::REQUEST_EVENT, self::ERROR_EVENT, self::CLOSE_EVENT];
+        $this->allowEvents = [static::OPEN_EVENT, self::PING_EVENT, self::PONG_EVENT, static::MESSAGE_EVENT, static::REQUEST_EVENT, self::ERROR_EVENT, self::CLOSE_EVENT];
     }
 
     protected function setHttpServerMustListenEvent()
@@ -77,9 +78,11 @@ class Server extends HttpServer
                 $this->close($connection);
                 $this->emitOnClose($connection);
                 break;
+            case OpcodeEnum::PONG:
+                $this->emitOnPong($connection);
+                break;
             case OpcodeEnum::BINARY:
             case OpcodeEnum::TEXT:
-            case OpcodeEnum::PONG:
             case OpcodeEnum::SEGMENT:
                 $this->emitOnMessage($connection, $frame);
         }
@@ -157,5 +160,10 @@ class Server extends HttpServer
     protected function emitOnPing(Connection $connection)
     {
         $this->eventHandler->trigger(static::PING_EVENT, $this, $connection);
+    }
+
+    protected function emitOnPong(Connection $connection)
+    {
+        $this->eventHandler->trigger(static::PONG_EVENT, $this, $connection);
     }
 }
