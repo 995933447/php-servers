@@ -214,7 +214,7 @@ class Response
         return $this;
     }
 
-    protected function getHeader(): string
+    protected function getHeaders(): string
     {
         if (is_null($this->reason) && is_null($this->statusCode)) {
             $this->status();
@@ -245,7 +245,7 @@ class Response
 
         if (!$this->isSending) {
             $this->isSending = true;
-            $data = $this->getHeader() . $data;
+            $data = $this->getHeaders() . $data;
         }
 
         $this->server->send($this->connection, $data);
