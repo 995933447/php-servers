@@ -340,7 +340,7 @@ $connection Bobby\Servers\Contracts\ConnectionContract 连接对象。\
 $force bool 表示是否强制关闭连接。如果否则会在连接所有数据发送完毕后关闭连接，否则表示立即关闭连接。
 
 public function send(Bobby\Servers\Contracts\ConnectionContract $connection, string $message): bool\
-给连接的客户端发送数据。\
+给连接的客户端发送数据。该操作是异步操作，不会产生IO阻塞。\
 参数:\
 $connection Bobby\Servers\Contracts\ConnectionContract 需要发送的连接对象。\
 $message string 消息。
@@ -349,7 +349,7 @@ public function listen()\
 server开始监听连接。
 
 public function getEventLoop(): Bobby\StreamEventLoop\LoopContract\
-获取通过构造函数传入的事件循环对象Bobby\StreamEventLoop\LoopContract接口实现类,详见功能见:https://packagist.org/packages/bobby/stream-event-loop
+获取通过构造函数传入的事件循环对象Bobby\StreamEventLoop\LoopContract接口实现类,可用于处理异步逻辑编程,定时器等功能,详见功能见:https://packagist.org/packages/bobby/stream-event-loop
 
 public function getServeSocket(): Bobby\Servers\Contracts\SocketContract\
 获取Bobby\Servers\Socket对象实例。
@@ -486,7 +486,7 @@ public function cookie(string $key, string $value = '', int $expire = 0, string 
 设置 HTTP 响应的 cookie 信息。此方法参数与 PHP 的 setcookie 完全一致。会自动会对 $value 进行 urlencode 编码，可使用$isRaw关闭对 $value 的编码处理   
 
 public function end(string $content = '')\
-发送 Http 响应体，并结束请求处理。
+发送 Http 响应体，并结束请求处理。该操作是异步操作，不会产生IO阻塞。
 
 public function chunk(string $content)\
 启用 Http Chunk 分段向浏览器发送相应内容。
@@ -502,7 +502,7 @@ public function make(): Bobby\Servers\Http\Response\
 和http server不同点:\
 新增方法：
 public function getPusher(): Bobby\Servers\Websocket\Pusher\
-获取websocket消息推送器。Bobby\Servers\Websocket\Pusher提供以下方法:\
+获取websocket消息推送器。推送器所有推送操作都是异步操作，不会产生IO操作。Bobby\Servers\Websocket\Pusher提供以下方法:\
 public function ping(Connection $connection)\
 发生ping包
 
@@ -624,7 +624,7 @@ public function listen()\
 server开始监听连接。
 
 public function getEventLoop(): Bobby\StreamEventLoop\LoopContract\
-获取通过构造函数传入的事件循环对象Bobby\StreamEventLoop\LoopContract接口实现类,详见功能见:https://packagist.org/packages/bobby/stream-event-loop
+获取通过构造函数传入的事件循环对象Bobby\StreamEventLoop\LoopContract接口实现类,可用于处理异步逻辑编程,定时器等功能。详见功能见:https://packagist.org/packages/bobby/stream-event-loop
 
 public function getServeSocket(): Bobby\Servers\Contracts\SocketContract\
 获取Bobby\Servers\Socket对象实例。
