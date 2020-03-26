@@ -489,7 +489,7 @@ public function end(string $content = '')\
 发送 Http 响应体，并结束请求处理。该操作是异步操作，不会产生IO阻塞。
 
 public function chunk(string $content)\
-启用 Http Chunk 分段向浏览器发送相应内容。
+启用 Http Chunk 分段向浏览器发送相应内容。该操作是异步操作，不会产生IO阻塞。
 
 public function redirect(string $url, $statusCode = 302)\
 发送 Http 跳转。调用此方法会自动 end 发送并结束响应。
@@ -615,7 +615,7 @@ public function resume()\
 服务器回复接收连接和读取数据。  
 
 public function sendTo(string $address, string $message): bool\
-给连接的客户端发送数据。\
+给连接的客户端发送数据。该操作是异步操作，不会产生IO阻塞。\
 参数:\
 $address string 发送地址。\
 $message string 消息。
