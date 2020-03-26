@@ -204,9 +204,15 @@ abstract class ConnectionOrientedServerContract extends ServerContract
 
         $this->eventLoop->addLoopStream(LoopContract::READ_EVENT, $connectSocketStream, function ($connectSocketStream) {
             $connection = $this->connections->get($connectSocketStream);
+            if (is_null($connection)) {
+                $this->close($connection);
+                return;
+            }
+
             if ($this->serveSocket->isOpenedSsl() && !$connection->isOpenedSsl()) {
                 $this->sslShakeWith($connection);
             }
+
             $this->receive($connection);
         });
     }
