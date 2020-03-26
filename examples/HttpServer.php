@@ -14,6 +14,31 @@ $http->on(\Bobby\Servers\Http\Server::REQUEST_EVENT, function (
     $request->compressToEnv();
     var_dump($_POST, $_GET, $_FILES, $_SERVER, $_FILES);
 
+    // 模拟异步请求远程api
+    $remote = fsockopen($host = 'www.baidu.com', 80);
+
+    $post = "GET / HTTP/1.1\r\n";
+    $post .= "Host: $host\r\n";
+    $post .= "Connection: close\r\n\r\n";
+
+    $server->getEventLoop()->addLoopStream(
+        \Bobby\StreamEventLoop\LoopContract::WRITE_EVENT,
+        $remote,
+        function ($remote, \Bobby\StreamEventLoop\LoopContract $loop) use ($host, &$post) {
+            if (($written = fwrite($remote, $post)) === strlen($post)) {
+                sleep(2);
+                $loop->removeLoopStream(\Bobby\StreamEventLoop\LoopContract::WRITE_EVENT, $remote);
+                $loop->addLoopStream(\Bobby\StreamEventLoop\LoopContract::READ_EVENT, $remote, function ($remote, \Bobby\StreamEventLoop\LoopContract $loop) {
+                    $data = fread($remote, 1024);
+                    echo $data;
+                    $loop->removeLoopStream(\Bobby\StreamEventLoop\LoopContract::READ_EVENT, $remote);
+                });
+            } else {
+                $post = substr($post, 0, $written);
+            }
+
+        });
+
     $response
         ->gzip(5)
         ->header('Vary', 'Accept-Encoding')
