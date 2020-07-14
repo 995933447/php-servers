@@ -154,7 +154,7 @@ class Response
         }
 
         if (!$isRaw) {
-            $value = rawurldecode($value);
+            $value = rawurlencode($value);
         }
 
         $cookie = "$key=$value; ";
